@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberAI - Sistema de Agendamiento WhatsApp & Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-900 font-bold text-xl shadow-md shadow-emerald-500/20">
+                <i class="fa-solid me-0.5 fa-scissors"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-white tracking-wide">BarberAI <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">v2.0 IA</span></h1>
+                <p class="text-xs text-slate-400">Sistema Autónomo de Agendamiento por WhatsApp</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <button id="btn-aca-modal" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md flex items-center space-x-2">
+                <i class="fa-solid fa-file-contract"></i>
+                <span>Ver Requerimientos ACA</span>
+            </button>
+            <div class="h-6 w-px bg-slate-700"></div>
+            <div class="flex items-center space-x-2 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-700 text-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-slate-300 font-medium">API Cloud Live</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Dual Grid -->
+    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1700px] mx-auto w-full">
+        
+        <!-- LEFT PANEL: WhatsApp Web Simulator (5 cols on lg) -->
+        <section class="lg:col-span-5 flex flex-col bg-slate-800 rounded-2xl border border-slate-700 shadow-xl overflow-hidden h-[820px]">
+            <!-- WhatsApp Header -->
+            <div class="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-700">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-slate-900 rounded-full"></span>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white">BarberAI Assistant</h2>
+                        <p class="text-[11px] text-emerald-400 flex items-center">
+                            <i class="fa-solid fa-bolt text-[9px] mr-1"></i> Responde al instante (IA)
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-sm">
+                    <button id="btn-reset-chat" title="Reiniciar Conversación" class="hover:text-emerald-400 transition-colors p-1.5">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <i class="fa-solid fa-ellipsis-vertical cursor-pointer hover:text-white"></i>
+                </div>
+            </div>
+
+            <!-- WhatsApp Pattern Chat Container -->
+            <div id="chat-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0b141a] bg-opacity-95 relative font-sans text-sm">
+                <!-- Messages render dynamically here -->
+            </div>
+
+            <!-- Quick Suggestions Chips -->
+            <div class="bg-slate-900/90 px-3 py-2 border-t border-slate-800 flex items-center space-x-2 overflow-x-auto text-xs no-scrollbar">
+                <span class="text-slate-500 font-medium text-[11px] whitespace-nowrap">Sugerencias:</span>
+                <button class="chip-btn px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-full border border-slate-700 whitespace-nowrap transition-colors" data-msg="Hola, quiero agendar una cita">
+                    ✂️ Agendar Cita
+                </button>
+                <button class="chip-btn px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-full border border-slate-700 whitespace-nowrap transition-colors" data-msg="¿Cuáles son los precios y servicios?">
+                    💵 Ver Precios
+                </button>
+                <button class="chip-btn px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-full border border-slate-700 whitespace-nowrap transition-colors" data-msg="¿Tienen disponibilidad mañana a las 4pm?">
+                    📅 Consultar Horarios
+                </button>
+            </div>
+
+            <!-- Chat Input Box -->
+            <form id="chat-form" class="bg-slate-900 p-3 border-t border-slate-800 flex items-center space-x-2">
+                <button type="button" class="text-slate-400 hover:text-slate-200 p-2 text-lg">
+                    <i class="fa-regular fa-face-smile"></i>
+                </button>
+                <input type="text" id="chat-input" placeholder="Escribe un mensaje en lenguaje natural..." 
+                    class="flex-1 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-400 text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-emerald-500 transition-all">
+                <button type="submit" class="w-10 h-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-all shadow-md shadow-emerald-600/30">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- RIGHT PANEL: Barber Operational Dashboard (7 cols on lg) -->
+        <section class="lg:col-span-7 flex flex-col space-y-5">
+            
+            <!-- Metrics KPI Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+                    <div class="flex items-center justify-between text-slate-400 mb-1 text-xs">
+                        <span>Citas Hoy</span>
+                        <i class="fa-regular fa-calendar-check text-emerald-400 text-sm"></i>
+                    </div>
+                    <div id="kpi-total-citas" class="text-2xl font-bold text-white">0</div>
+                    <div class="text-[11px] text-emerald-400 mt-1">100% Automático</div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+                    <div class="flex items-center justify-between text-slate-400 mb-1 text-xs">
+                        <span>Ingresos Est.</span>
+                        <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
+                    </div>
+                    <div id="kpi-ingresos" class="text-xl font-bold text-white">$0</div>
+                    <div class="text-[11px] text-slate-400 mt-1">Proyección Diaria</div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+                    <div class="flex items-center justify-between text-slate-400 mb-1 text-xs">
+                        <span>Ocupación</span>
+                        <i class="fa-solid fa-chart-pie text-indigo-400 text-sm"></i>
+                    </div>
+                    <div id="kpi-ocupacion" class="text-2xl font-bold text-white">0%</div>
+                    <div class="text-[11px] text-indigo-300 mt-1">Capacidad SILLONES</div>
+                </div>
+
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+                    <div class="flex items-center justify-between text-slate-400 mb-1 text-xs">
+                        <span>Latencia IA</span>
+                        <i class="fa-solid fa-microchip text-teal-400 text-sm"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-white">1.2 s</div>
+                    <div class="text-[11px] text-teal-300 mt-1">SLA RNF02 Cumplido</div>
+                </div>
+            </div>
+
+            <!-- Agenda View Switcher & Action Bar -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-wrap items-center justify-between gap-3 shadow-md">
+                <div class="flex items-center space-x-2">
+                    <button id="tab-timeline" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white transition-all shadow-md">
+                        <i class="fa-solid fa-timeline mr-1"></i> Línea de Tiempo
+                    </button>
+                    <button id="tab-table" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition-all">
+                        <i class="fa-solid fa-list mr-1"></i> Tabla de Registros
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <input type="text" id="filter-search" placeholder="Buscar cliente..." class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500">
+                    <button id="btn-nueva-cita-manual" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600 transition-all flex items-center space-x-1">
+                        <i class="fa-solid fa-plus text-emerald-400"></i>
+                        <span>Manual</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 1: Timeline Visual Schedule by Barber -->
+            <div id="view-timeline" class="bg-slate-800 rounded-2xl border border-slate-700 p-5 shadow-xl flex-1 overflow-y-auto max-h-[550px]">
+                <h3 class="text-sm font-bold text-slate-200 mb-4 flex items-center justify-between">
+                    <span><i class="fa-solid fa-calendar-day text-emerald-400 mr-2"></i>Agenda Sincronizada de Barberos</span>
+                    <span class="text-xs text-slate-400 font-normal">Sincronización en vivo con WhatsApp</span>
+                </h3>
+
+                <!-- Barber Columns Timeline -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="timeline-container">
+                    <!-- Barber Columns populated via JS -->
+                </div>
+            </div>
+
+            <!-- View 2: Detailed Table View -->
+            <div id="view-table" class="hidden bg-slate-800 rounded-2xl border border-slate-700 p-4 shadow-xl flex-1 overflow-hidden flex flex-col">
+                <div class="overflow-x-auto flex-1 max-h-[500px]">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 font-semibold uppercase text-[10px] tracking-wider sticky top-0">
+                            <tr>
+                                <th class="p-3">ID / Hora</th>
+                                <th class="p-3">Cliente</th>
+                                <th class="p-3">Servicio</th>
+                                <th class="p-3">Barbero</th>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-700/60">
+                            <!-- Table rows populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- ACA Requirements Modal -->
+    <div id="modal-aca" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+            <button id="btn-close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-white">Cumplimiento de Requerimientos ACA</h2>
+                    <p class="text-xs text-slate-400">Asignatura: Requerimientos de Software | Docente: Juan Carlos Pérez Castillo</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-300">
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <h3 class="font-bold text-emerald-400 text-sm mb-1">Requerimientos Funcionales Implementados (RF)</h3>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                        <li><strong>RF01 (PLN):</strong> Interpreta texto libre en el chat simulado identificando intenciones de agendamiento y precios.</li>
+                        <li><strong>RF02 (Consulta en tiempo real):</strong> Verifica espacios libres en los sillones de los barberos sin cruces de horario.</li>
+                        <li><strong>RF03 (Registro Autónomo):</strong> Inserta la cita automáticamente tanto en el chat como en el tablero operacional.</li>
+                        <li><strong>RF04 (Recordatorios):</strong> Simula el estado de confirmación de 2 horas previas.</li>
+                        <li><strong>RF05 (Cancelación):</strong> Permite liberar turnos directamente desde los controles o por el chat.</li>
+                        <li><strong>RF06 (Reportes):</strong> Calcula métricas de ventas y ocupación actualizadas dinámicamente.</li>
+                    </ul>
+                </div>
+
+                <div class="p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <h3 class="font-bold text-indigo-400 text-sm mb-1">Requerimientos No Funcionales Validados (RNF)</h3>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                        <li><strong>RNF01 (Usabilidad):</strong> Proceso de agendamiento guiado en menos de 4 interacciones conversacionales.</li>
+                        <li><strong>RNF02 (Rendimiento):</strong> Simulación de procesamiento e respuesta en latencia menor a 2 segundos.</li>
+                        <li><strong>RNF03 (Seguridad):</strong> Modelo de encriptación de credenciales y roles definidos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800 text-right">
+                <button id="btn-close-modal-footer" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl text-xs transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
